@@ -2,27 +2,25 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"strings"
 	"time"
 )
 
 const DataFile = "loremipsum.txt"
 
 // Return the word frequencies of the text argument.
-//
-// Split load optimally across processor cores.
 func WordCount(text string) map[string]int {
+	// Create a map to hold the word frequencies
 	freqs := make(map[string]int)
-	words := []byte(text)
-	wordStart := 0
-	for i := 0; i < len(words); i++ {
-		if words[i] == ' ' {
-			word := string(words[wordStart:i])
-			freqs[word]++
-			wordStart = i + 1
-		}
-	}
-	word := string(words[wordStart:])
-	freqs[word]++
+	text = strings.ToLower(text)
+
+	// Split the text into words
+	words := splitWords(text)
+
+
+	return freqs
 }
 
 // Benchmark how long it takes to count word frequencies in text numRuns times.
@@ -47,9 +45,29 @@ func printResults(runtimeMillis int64, numRuns int) {
 }
 
 func main() {
-	// read in DataFile as a string called data
 
+	content, err := ioutil.ReadFile("C:\Users\timel\indapluswindows\twhite-palinda-3\src\singleworker\loremipsum.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	data := string(content)
+
+	// Print the word frequencies
+	fmt.Printf("%#v", WordCount(string(data)))
 	numRuns := 100
 	runtimeMillis := benchmark(string(data), numRuns)
 	printResults(runtimeMillis, numRuns)
+}
+
+func splitWords(text string) []string {
+	// Split the text into words
+	words := strings.Fields(text)
+
+	// Remove commas and periods from the words
+	for i, word := range words {
+		words[i] = strings.Trim(word, ",")
+		words[i] = strings.Trim(word, ".")
+	}
+
+	return words
 }

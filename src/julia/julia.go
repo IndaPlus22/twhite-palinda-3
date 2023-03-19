@@ -41,7 +41,9 @@ var Funcs []ComplexFunc = []ComplexFunc{
 }
 
 func main() {
+	wg := new(sync.WaitGroup)
 	for n, fn := range Funcs {
+		wg.Add(1)
 		err := CreatePng("picture-"+strconv.Itoa(n)+".png", fn, 1024)
 		if err != nil {
 			log.Fatal(err)
@@ -76,9 +78,10 @@ func Julia(f ComplexFunc, n int) image.Image {
 				b := uint8(n % 32 * 8)
 				img.Set(i, j, color.RGBA{r, g, b, 255})
 			}
-		wg.Done()
+			wg.Done()
 		}(i)
 	}
+		wg.Wait()
 	return img
 }
 

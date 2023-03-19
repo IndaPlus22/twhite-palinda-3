@@ -4,25 +4,25 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"strings"
 	"time"
 )
 
 const DataFile = "loremipsum.txt"
 
-// Return the word frequencies of the text argument.
+// Return the word frequencies of the text argument without commas.
 func WordCount(text string) map[string]int {
+	// Create a map to hold the word frequencies
 	freqs := make(map[string]int)
-	words := []byte(text)
-	wordStart := 0
-	for i := 0; i < len(words); i++ {
-		if words[i] == ' ' {
-			word := string(words[wordStart:i])
-			freqs[word]++
-			wordStart = i + 1
-		}
+	text = strings.ToLower(text)
+
+	// Split the text into words
+	words := splitWords(text)
+
+	// Count the word frequencies
+	for _, word := range words {
+		freqs[word]++
 	}
-	word := string(words[wordStart:])
-	freqs[word]++
 
 	return freqs
 }
@@ -49,16 +49,29 @@ func printResults(runtimeMillis int64, numRuns int) {
 }
 
 func main() {
-	// read in DataFile as a string called data.
-	content, err := ioutil.ReadFile(DataFile)
+
+	content, err := ioutil.ReadFile("\Users\timel\indapluswindows\twhite-palinda-3\src\singleworker\loremipsum.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
 	data := string(content)
 
+	// Print the word frequencies
 	fmt.Printf("%#v", WordCount(string(data)))
-
 	numRuns := 100
 	runtimeMillis := benchmark(string(data), numRuns)
 	printResults(runtimeMillis, numRuns)
+}
+
+func splitWords(text string) []string {
+	// Split the text into words
+	words := strings.Fields(text)
+
+	// Remove commas from the words
+	for i, word := range words {
+		words[i] = strings.Trim(word, ",")
+		words[i] = strings.Trim(word, ".")
+	}
+
+	return words
 }

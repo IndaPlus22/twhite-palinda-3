@@ -4,23 +4,38 @@
 1. What happens if you remove the go-command from the Seek call in
 the main function?
 
-No Goroutines are created and the program will not work.
+Hypothesis: The program won't run as no Goroutines are started.
+
+After test: The program will run without any problems. The Seek function will
+be executed in the main routine. The main routine will wait for the
+Seek function to finish before exiting. Since the Seek function
+doesn't send or receive any messages the program will exit
+immediately.
 
 
 2. What happens if you switch the declaration wg := new(sync.WaitGroup)
 to var wg sync.WaitGroup and the parameter wg *sync.WaitGroup to 
 wg sync.WaitGroup?
 
-Changing the parameter to wg sync.WaitGroup will not work because the
-WaitGroup needs to be passed by reference. Thus, the Seek function will not be able
-to update the WaitGroup.
+Hypothesis: Switching the declaration wg := new(sync.WaitGroup) to var 
+wg sync.WaitGroup is not a problem as it's just syntactic sugar.
+However, changing the parameter wg *sync.WaitGroup to wg sync.WaitGroup
+will cause the program to crash since the WaitGroup needs to be passed
+by reference.
+
+After test: Apparently making the switch from wg := new(sync.WaitGroup) to
+var wg sync.WaitGroup is makes wg a local variable. This means that
+the WaitGroup will be copied to each goroutine. This will cause the
+WaitGroup to be in an inconsistent state. The program will crash
+with a panic: sync: negative WaitGroup counter.
+
 
 3. What happens if you remove the buffer on the channel match?
 
 The program will crash at the main routine. Since 
 the channel hasn't got a buffer the message it expects the
-message to be read instantaneously, but it's not. This will cause
-a deadlock.
+message to be read instantaneously, which it isn't. 
+This will cause a deadlock.
 
 
 4. What happens if you remove the default-case from the case-statement 
@@ -30,7 +45,6 @@ The program should run without any problems. The default
 case is only executed if there is no pending send operation. Since
 there is always a pending send operation the default case will never
 be executed.
-
 */
 package main
 
