@@ -12,7 +12,6 @@ Improved runtime:
 real    0m3.175s
 user    0m0.000s
 sys     0m0.000s
-
 */
 package main
 
@@ -81,7 +80,7 @@ func Julia(f ComplexFunc, n int) image.Image {
 			wg.Done()
 		}(i)
 	}
-		wg.Wait()
+	wg.Wait()
 	return img
 }
 

@@ -1,6 +1,6 @@
 // http://www.nada.kth.se/~snilsson/concurrency/
 
-/* 
+/*
 1. What happens if you remove the go-command from the Seek call in
 the main function?
 
@@ -12,12 +12,11 @@ Seek function to finish before exiting. Since the Seek function
 doesn't send or receive any messages the program will exit
 immediately.
 
-
 2. What happens if you switch the declaration wg := new(sync.WaitGroup)
-to var wg sync.WaitGroup and the parameter wg *sync.WaitGroup to 
+to var wg sync.WaitGroup and the parameter wg *sync.WaitGroup to
 wg sync.WaitGroup?
 
-Hypothesis: Switching the declaration wg := new(sync.WaitGroup) to var 
+Hypothesis: Switching the declaration wg := new(sync.WaitGroup) to var
 wg sync.WaitGroup is not a problem as it's just syntactic sugar.
 However, changing the parameter wg *sync.WaitGroup to wg sync.WaitGroup
 will cause the program to crash since the WaitGroup needs to be passed
@@ -29,16 +28,14 @@ the WaitGroup will be copied to each goroutine. This will cause the
 WaitGroup to be in an inconsistent state. The program will crash
 with a panic: sync: negative WaitGroup counter.
 
-
 3. What happens if you remove the buffer on the channel match?
 
-The program will crash at the main routine. Since 
+The program will crash at the main routine. Since
 the channel hasn't got a buffer the message it expects the
-message to be read instantaneously, which it isn't. 
+message to be read instantaneously, which it isn't.
 This will cause a deadlock.
 
-
-4. What happens if you remove the default-case from the case-statement 
+4. What happens if you remove the default-case from the case-statement
 in the main function?
 
 The program should run without any problems. The default
