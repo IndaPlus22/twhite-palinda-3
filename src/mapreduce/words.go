@@ -18,11 +18,12 @@ func WordCount(text string) map[string]int {
 	ch := make(chan map[string]int)
 	text = strings.ToLower(text)
 	words := strings.Fields(text)
-	size := 1000
+	chunk := len(words) / 3000 // split words into 1000 chunks (arbitrary number
 	length := len(words)
 	var wg sync.WaitGroup
 
-	for i, j := 0, size; i < length; i, j = j, j+size {
+	// split words into chunks and run each chunk in a goroutine
+	for i, j := 0, chunk; i < length; i, j = j, j+chunk {
 		if j > length {
 			j = length
 		}
@@ -38,11 +39,16 @@ func WordCount(text string) map[string]int {
 			wg.Done()
 		}(words[i:j])
 	}
-	wg.Wait()
-	close(ch)
 
-	for subRoutine := range ch {
-		for word, value := range subRoutine {
+	// close channel when all goroutines are done
+	go func ()  {
+		wg.Wait()
+		close(ch)
+	}()
+
+	// read from channel
+	for subRoutines := range ch {
+		for word, value := range subRoutines {
 			freqs[word] += value
 		}
 	}
