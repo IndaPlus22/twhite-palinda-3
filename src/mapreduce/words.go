@@ -18,7 +18,8 @@ func WordCount(text string) map[string]int {
 	ch := make(chan map[string]int)
 	text = strings.ToLower(text)
 	words := strings.Fields(text)
-	chunk := len(words) / 3000 // split words into 1000 chunks (arbitrary number
+	n := 8 // number of goroutines
+	chunk := len(words) / n // split words into n chunks (arbitrary number
 	length := len(words)
 	var wg sync.WaitGroup
 
