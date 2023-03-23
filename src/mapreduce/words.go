@@ -25,6 +25,7 @@ func WordCount(text string) map[string]int {
 
 	// split words into chunks and run each chunk in a goroutine
 	for i, j := 0, chunk; i < length; i, j = j, j+chunk {
+		// final step before the loop is finished
 		if j > length {
 			j = length
 		}
@@ -41,7 +42,7 @@ func WordCount(text string) map[string]int {
 		}(words[i:j])
 	}
 
-	// close channel when all goroutines are done
+	// Close channel when all goroutines are done
 	go func ()  {
 		wg.Wait()
 		close(ch)
